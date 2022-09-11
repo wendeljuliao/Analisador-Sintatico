@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,8 +82,8 @@ class Edge {
 
 public class Main {
 
-	public static void main(String[] args) {
-		Scanner prompt = new Scanner(System.in);
+	public static void main(String[] args) throws FileNotFoundException {
+		Scanner prompt = new Scanner(new FileReader("./src/teste.txt"));
 		String entradaUsuario;
 		Grafo grafo = new Grafo();
 
@@ -147,9 +149,12 @@ public class Main {
 //			}
 //		}
 
-		System.out.println("Digite a entrada");
-		entradaUsuario = prompt.nextLine();
-		System.out.println("Entrada digitada: " + entradaUsuario);
+		System.out.println("Entrada digitada está no arquivo .txt:");
+//		while (prompt.hasNextLine()) {
+//			entradaUsuario = prompt.nextLine();
+//		    System.out.println(entradaUsuario);
+//		}
+//		
 		System.out.println();
 		System.out.println("Saída:");
 
@@ -161,118 +166,125 @@ public class Main {
 
 		int numToken = 0;
 
-		while (indice < entradaUsuario.length()) {
+		while (prompt.hasNextLine()) {
+			entradaUsuario = prompt.nextLine();
+			indice = 0;
+			origem = 1;
+			destino = 1;
+			while (indice < entradaUsuario.length()) {
 
-			caractere = entradaUsuario.charAt(indice);
-
-			if (caractere == ' ' | caractere == '\n') {
-
-				origem = destino;
-				indice++;
-			} else if (caractere == '%') {
-				auxCadeia = "";
-
-				destino = 6;
-
-				while (indice < entradaUsuario.length()) {
-					caractere = entradaUsuario.charAt(indice);
-					if (caractere != '\n') {
-						auxCadeia += caractere;
-
-						origem = destino;
-						indice++;
-
-					} else {
-						destino = 1;
-						break;
-					}
-				}
-
-				System.out.println("VALOR: " + auxCadeia + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
-
-				numToken++;
-
-			} else if (caractere == ':') {
-				
-				System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
-				numToken++;
-				indice++;
-				destino = 4;
-				
-				if (indice < entradaUsuario.length()) {
-					caractere = entradaUsuario.charAt(indice);
-					if (caractere == '=') {
-						System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
-						numToken++;
-						indice++;
-						destino = 5;
-					}
-				}
-				
-				destino = 1;
-				
-
-			} else if (numeros.contains(caractere)) {
-
-				auxCadeia = "";
-
-				destino = 3;
-
-				while (indice < entradaUsuario.length()) {
-					caractere = entradaUsuario.charAt(indice);
-					if (grafo.hasEdge(origem, destino, caractere)) {
-						auxCadeia += caractere;
-
-						origem = destino;
-						indice++;
-
-					} else {
-						destino = 1;
-						break;
-					}
-				}
-
-				System.out.println("VALOR: " + auxCadeia + " CLASSE: NÚMERO (TOKEN " + numToken + ")");
-
-				numToken++;
-			} else if (letras.contains(caractere)) {
-				auxCadeia = "";
-
-				destino = 2;
-
-				while (indice < entradaUsuario.length()) {
-					caractere = entradaUsuario.charAt(indice);
-					if (grafo.hasEdge(origem, destino, caractere)) {
-						auxCadeia += caractere;
-
-						origem = destino;
-						indice++;
-
-					} else {
-						destino = 1;
-						break;
-					}
-				}
-				// System.out.println(auxCadeia);
-
-				if (palavrasReservadas.contains(auxCadeia)) {
-					System.out.println("VALOR: " + auxCadeia + " CLASSE: PALAVRA RESERVADA (TOKEN " + numToken + ")");
-				} else {
-					System.out.println("VALOR: " + auxCadeia + " CLASSE: IDENTIFICADOR (TOKEN " + numToken + ")");
-				}
-				numToken++;
-
-			} else if (outrosCaracteres.contains(caractere)){
 				caractere = entradaUsuario.charAt(indice);
-				System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
+				origem = destino;
 
-				numToken++;
-				indice++;
-			} else {
-				System.out.println("Erro, caractere não reconhecido: " + caractere);
-				System.exit(1);
+				if (caractere == ' ' | caractere == '\n') {
+
+					indice++;
+				} else if (caractere == '%') {
+					auxCadeia = "";
+
+					destino = 6;
+
+					while (indice < entradaUsuario.length()) {
+						caractere = entradaUsuario.charAt(indice);
+						if (caractere != '\n') {
+							auxCadeia += caractere;
+
+							origem = destino;
+							indice++;
+
+						} else {
+							destino = 1;
+							break;
+						}
+					}
+
+					System.out.println("VALOR: " + auxCadeia + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
+
+					numToken++;
+
+				} else if (caractere == ':') {
+
+					System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
+					numToken++;
+					indice++;
+					destino = 4;
+
+					if (indice < entradaUsuario.length()) {
+						caractere = entradaUsuario.charAt(indice);
+						if (caractere == '=') {
+							System.out.println(
+									"VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
+							numToken++;
+							indice++;
+							destino = 5;
+						}
+					}
+
+					destino = 1;
+
+				} else if (numeros.contains(caractere)) {
+
+					auxCadeia = "";
+
+					destino = 3;
+
+					while (indice < entradaUsuario.length()) {
+						caractere = entradaUsuario.charAt(indice);
+						if (grafo.hasEdge(origem, destino, caractere)) {
+							auxCadeia += caractere;
+
+							origem = destino;
+							indice++;
+
+						} else {
+							destino = 1;
+							break;
+						}
+					}
+
+					System.out.println("VALOR: " + auxCadeia + " CLASSE: NÚMERO (TOKEN " + numToken + ")");
+
+					numToken++;
+				} else if (letras.contains(caractere)) {
+					auxCadeia = "";
+
+					destino = 2;
+
+					while (indice < entradaUsuario.length()) {
+						caractere = entradaUsuario.charAt(indice);
+						if (grafo.hasEdge(origem, destino, caractere)) {
+							auxCadeia += caractere;
+
+							origem = destino;
+							indice++;
+
+						} else {
+							destino = 1;
+							break;
+						}
+					}
+					// System.out.println(auxCadeia);
+
+					if (palavrasReservadas.contains(auxCadeia)) {
+						System.out
+								.println("VALOR: " + auxCadeia + " CLASSE: PALAVRA RESERVADA (TOKEN " + numToken + ")");
+					} else {
+						System.out.println("VALOR: " + auxCadeia + " CLASSE: IDENTIFICADOR (TOKEN " + numToken + ")");
+					}
+					numToken++;
+
+				} else if (outrosCaracteres.contains(caractere)) {
+					caractere = entradaUsuario.charAt(indice);
+					System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
+
+					numToken++;
+					indice++;
+				} else {
+					System.out.println("Erro, caractere não reconhecido: " + caractere);
+					System.exit(1);
+				}
+
 			}
-
 		}
 
 	}
