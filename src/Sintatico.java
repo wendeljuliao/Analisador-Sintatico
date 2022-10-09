@@ -52,7 +52,11 @@ public class Sintatico {
 		} else if (palavras.get(0)[0].equals("GO")) {
 			match("GO");
 			match("TO");
-			// FAZER AINDA O DESVIO
+			matchClasse("IDENTIFICADOR");
+			if (palavras.get(0)[0].equals("OF")) {
+				match("OF");
+				eListaRotulos();
+			}
 		} else if (palavras.get(0)[0].equals("READ")) {
 			match("READ");
 			eListaIdentificadores();
