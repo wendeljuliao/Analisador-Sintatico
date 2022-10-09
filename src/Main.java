@@ -2,83 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Scanner;
-
-class Grafo {
-	HashMap<Integer, ArrayList<Edge>> map = new HashMap<>();
-
-	public void addEdge(int origem, int destino, char peso) {
-		if (!hasVertex(origem)) {
-			addVertex(origem);
-		}
-
-		if (!hasVertex(destino)) {
-			addVertex(destino);
-		}
-
-		map.get(origem).add(new Edge(origem, destino, peso));
-
-	}
-
-	public boolean hasVertex(int no) {
-
-		if (map.containsKey(no)) {
-
-			return true;
-		}
-		return false;
-	}
-
-	public void addVertex(int vertex) {
-		map.put(vertex, new ArrayList<Edge>());
-	}
-
-	public boolean hasEdge(int origem, int destino, char peso) {
-		if (hasVertex(origem)) {
-			Edge edge = new Edge(origem, destino, peso);
-
-			for (int i = 0; i < map.get(origem).size(); i++) {
-				if (map.get(origem).get(i).equals(edge)) {
-					return true;
-				}
-			}
-
-			return false;
-
-		}
-		return false;
-	}
-
-	public ArrayList<Edge> getEdges(int vertex) {
-		return map.get(vertex);
-	}
-
-}
-
-class Edge {
-	int origem;
-	int destino;
-	char weight;
-
-	public Edge(int origem, int destino, char weight) {
-		this.origem = origem;
-		this.destino = destino;
-		this.weight = weight;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		Edge edge = (Edge) o;
-		return origem == edge.origem && destino == edge.destino && weight == edge.weight;
-	}
-}
 
 public class Main {
 
@@ -97,6 +21,8 @@ public class Main {
 				Arrays.asList('+', '-', '*', '/', ':', '=', '>', '<', ',', '.', ';', '(', ')'));
 
 		char caractere;
+
+		ArrayList<String[]> guardarPalavras = new ArrayList<>();
 
 		// 1. INICIALIZAÇÃO CARACTERES
 
@@ -140,21 +66,10 @@ public class Main {
 				grafo.addEdge(1, 7, outro);
 			}
 		}
-		// Colocando vertices 2 até o 7 de volta pro 1
-//		for (int i = 2; i <= 7; i++) {
-//			for (Character carac : brancoseLinhas) {
-//
-//				grafo.addEdge(i, 1, carac);
-//				grafo.addEdge(i, 1, carac);
-//			}
-//		}
 
 		System.out.println("Entrada digitada está no arquivo .txt:");
-//		while (prompt.hasNextLine()) {
-//			entradaUsuario = prompt.nextLine();
-//		    System.out.println(entradaUsuario);
-//		}
-//		
+		System.out.println("Olhe o arquivo");
+
 		System.out.println();
 		System.out.println("Saída:");
 
@@ -198,12 +113,16 @@ public class Main {
 						}
 					}
 
+					String vetor[] = { auxCadeia, "OUTRO" };
+					guardarPalavras.add(vetor);
 					System.out.println("VALOR: " + auxCadeia + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
 
 					numToken++;
 
 				} else if (caractere == ':') {
 
+					String vetor[] = { Character.toString(caractere), "OUTRO" };
+					guardarPalavras.add(vetor);
 					System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
 					numToken++;
 					indice++;
@@ -212,6 +131,8 @@ public class Main {
 					if (indice < entradaUsuario.length()) {
 						caractere = entradaUsuario.charAt(indice);
 						if (caractere == '=') {
+							String vetor2[] = { Character.toString(caractere), "OUTRO" };
+							guardarPalavras.add(vetor2);
 							System.out.println(
 									"VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
 							numToken++;
@@ -242,6 +163,8 @@ public class Main {
 						}
 					}
 
+					String vetor[] = { auxCadeia, "NÚMERO" };
+					guardarPalavras.add(vetor);
 					System.out.println("VALOR: " + auxCadeia + " CLASSE: NÚMERO (TOKEN " + numToken + ")");
 
 					numToken++;
@@ -266,15 +189,22 @@ public class Main {
 					// System.out.println(auxCadeia);
 
 					if (palavrasReservadas.contains(auxCadeia)) {
+						String vetor[] = { auxCadeia, "PALAVRA RESERVADA" };
+						guardarPalavras.add(vetor);
 						System.out
 								.println("VALOR: " + auxCadeia + " CLASSE: PALAVRA RESERVADA (TOKEN " + numToken + ")");
 					} else {
+						String vetor[] = { auxCadeia, "IDENTIFICADOR" };
+						guardarPalavras.add(vetor);
 						System.out.println("VALOR: " + auxCadeia + " CLASSE: IDENTIFICADOR (TOKEN " + numToken + ")");
 					}
 					numToken++;
 
 				} else if (outrosCaracteres.contains(caractere)) {
 					caractere = entradaUsuario.charAt(indice);
+
+					String vetor[] = { Character.toString(caractere), "OUTRO" };
+					guardarPalavras.add(vetor);
 					System.out.println("VALOR: " + caractere + " CLASSE: OUTRO CARACTERE (TOKEN " + numToken + ")");
 
 					numToken++;
@@ -287,6 +217,23 @@ public class Main {
 			}
 		}
 
+		System.out.println();
+		System.out.println();
+		System.out.println("Análise sintática:");
+
+		// Analisador sintático
+
+//		for (int i = 0; i < guardarPalavras.size(); i++) {
+//			System.out.println(guardarPalavras.get(i)[0] + " " + guardarPalavras.get(i)[1]);
+//		}
+
+		Sintatico analisadorSintatico = new Sintatico(guardarPalavras);
+		try {
+			analisadorSintatico.programa();
+			System.out.println("Tudo certo");
+		} catch (Error err) {
+			System.out.println(err);
+		}
 	}
 
 }
