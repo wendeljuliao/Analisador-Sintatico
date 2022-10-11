@@ -231,7 +231,8 @@ public class Main {
 		try {
 			analisadorSintatico.programa();
 			System.out.println("Tudo certo");
-		} catch (Error err) {
+		} catch (Exception err) {
+			System.out.println("Erro:");
 			System.out.println(err);
 		}
 	}
